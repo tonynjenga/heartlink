@@ -200,6 +200,23 @@
 
             <label for="time">Time</label>
             <input id="time" type="time">
+            
+<div style="margin-top:20px;text-align:center;">
+  <button type="button" class="yes" onclick="generateInvitationLink()">
+    Generate Invitation Link 🔗
+  </button>
+
+  <input id="shareLink" readonly
+    placeholder="Your invitation link will appear here"
+    style="margin-top:12px;">
+
+  <button type="button" class="yes"
+    onclick="shareOnWhatsApp()" style="margin-top:12px;">
+    Share on WhatsApp 💚
+  </button>
+
+  <p id="linkStatus"></p>
+</div>
         </section>
 
         <section class="panel">
@@ -321,6 +338,71 @@
     }
 
     updateInvitation();
+function generateInvitationLink() {
+  const fields = [
+    "sender", "recipient", "question",
+    "message", "venue", "date", "time"
+  ];
+
+  const data = {};
+
+  fields.forEach(id => {
+    const element = document.getElementById(id);
+    if (element) data[id] = element.value;
+  });
+
+  const encoded = btoa(
+    unescape(encodeURIComponent(JSON.stringify(data)))
+  );
+
+  const link = window.location.origin +
+    window.location.pathname + "#invite=" + encoded;
+
+  document.getElementById("shareLink").value = link;
+  document.getElementById("linkStatus").textContent =
+    "Your invitation link is ready! ❤️";
+}
+
+function shareOnWhatsApp() {
+  const link = document.getElementById("shareLink").value;
+
+  if (!link) {
+    document.getElementById("linkStatus").textContent =
+      "Generate your invitation link first ❤️";
+    return;
+  }
+
+  const text =
+    "I've made you a special invitation on HeartLink ❤️ " + link;
+
+  window.open(
+    "https://wa.me/?text=" + encodeURIComponent(text),
+    "_blank"
+  );
+}
+
+function loadInvitationFromLink() {
+  if (!location.hash.startsWith("#invite=")) return;
+
+  try {
+    const encoded = location.hash.substring(8);
+    const data = JSON.parse(
+      decodeURIComponent(escape(atob(encoded)))
+    );
+
+    Object.keys(data).forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.value = data[id];
+    });
+
+    updateInvitation();
+  } catch (error) {
+    console.error("Could not load invitation link", error);
+  }
+}
+
+loadInvitationFromLink();    
+
 </script>
 
 <section style="background:#fff0f5;color:#333;text-align:center;padding:30px 20px;margin:30px auto;max-width:600px;border-radius:20px;font-family:Arial,sans-serif;">
