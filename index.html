@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeartLink | Make It Special</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px 15px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffb6d5, #ffe4ef, #f7a8ca);
+            color: #39202c;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: #9e2457;
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #704052;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px #9b31531c;
+        }
+
+        h2 {
+            color: #a52b60;
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 6px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #efb5cd;
+            border-radius: 9px;
+            font-size: 15px;
+            background: #fff9fc;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .invitation {
+            text-align: center;
+            border: 2px solid #f2b0cd;
+            background: #fff7fb;
+            padding: 24px 18px;
+            border-radius: 16px;
+        }
+
+        .heart {
+            font-size: 42px;
+        }
+
+        .invitation h2 {
+            font-size: 28px;
+        }
+
+        #previewMessage {
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .details {
+            text-align: left;
+            margin: 22px 0;
+            line-height: 2;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        button {
+            border: none;
+            border-radius: 30px;
+            padding: 13px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .yes {
+            background: #bd2866;
+            color: white;
+        }
+
+        .no {
+            background: #ffe0ed;
+            color: #8e214c;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-weight: bold;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 28px;
+            color: #76334e;
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>💗 HeartLink</h1>
+        <p>Make your invitation unforgettable.</p>
+    </header>
+
+    <div class="layout">
+
+        <section class="panel">
+            <h2>Create Your Invitation</h2>
+
+            <label for="sender">Your name</label>
+            <input id="sender" placeholder="Enter your name">
+
+            <label for="recipient">Their name</label>
+            <input id="recipient" placeholder="Who are you inviting?">
+
+            <label for="question">Your invitation</label>
+            <select id="question">
+                <option>Will you go on a date with me?</option>
+                <option>Will you be my Valentine?</option>
+                <option>Can I take you out?</option>
+                <option>Will you spend a special day with me?</option>
+            </select>
+
+            <label for="message">Your personal message</label>
+            <textarea id="message" rows="4"
+                placeholder="Write something from your heart..."></textarea>
+
+            <label for="venue">Venue</label>
+            <input id="venue" placeholder="Leave blank until confirmed">
+
+            <label for="date">Date</label>
+            <input id="date" type="date">
+
+            <label for="time">Time</label>
+            <input id="time" type="time">
+        </section>
+
+        <section class="panel">
+            <div class="invitation">
+
+                <div class="heart">💗</div>
+
+                <p>A SPECIAL INVITATION FOR</p>
+
+                <h2 id="previewRecipient">Someone Special</h2>
+
+                <h3 id="previewQuestion">
+                    Will you go on a date with me?
+                </h3>
+
+                <p id="previewMessage">
+                    Every special moment starts with a question...
+                </p>
+
+                <div class="details">
+                    <div>📍 <strong>Venue:</strong>
+                        <span id="previewVenue"></span>
+                    </div>
+
+                    <div>📅 <strong>Date:</strong>
+                        <span id="previewDate"></span>
+                    </div>
+
+                    <div>🕒 <strong>Time:</strong>
+                        <span id="previewTime"></span>
+                    </div>
+                </div>
+
+                <p>With love,</p>
+                <h3 id="previewSender">Someone Who Cares</h3>
+
+                <div class="buttons">
+                    <button class="yes" onclick="sayYes()">
+                        YES 💖
+                    </button>
+
+                    <button class="no" onclick="sayNo()">
+                        NO 🙈
+                    </button>
+                </div>
+
+                <p id="response"></p>
+
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        If it gets you a date, weka kitu bana 😂❤️
+        <p>Made with 💗 by HeartLink</p>
+    </footer>
+
+</div>
+
+<script>
+    const fields = [
+        "sender", "recipient", "question",
+        "message", "venue", "date", "time"
+    ];
+
+    function updateInvitation() {
+        const sender = document.getElementById("sender").value.trim();
+        const recipient = document.getElementById("recipient").value.trim();
+        const message = document.getElementById("message").value.trim();
+        const venue = document.getElementById("venue").value.trim();
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+
+        document.getElementById("previewSender").textContent =
+            sender || "Someone Who Cares";
+
+        document.getElementById("previewRecipient").textContent =
+            recipient || "Someone Special";
+
+        document.getElementById("previewQuestion").textContent =
+            document.getElementById("question").value;
+
+        document.getElementById("previewMessage").textContent =
+            message || "Every special moment starts with a question...";
+
+        document.getElementById("previewVenue").textContent = venue;
+
+        document.getElementById("previewDate").textContent =
+            date ? new Date(date + "T12:00:00").toLocaleDateString() : "";
+
+        document.getElementById("previewTime").textContent =
+            time ? new Date("2000-01-01T" + time).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit"
+            }) : "";
+    }
+
+    fields.forEach(function(id) {
+        document.getElementById(id).addEventListener(
+            "input", updateInvitation
+        );
+        document.getElementById(id).addEventListener(
+            "change", updateInvitation
+        );
+    });
+
+    function sayYes() {
+        const sender = document.getElementById("sender").value.trim();
+
+        document.getElementById("response").textContent =
+            "It's a YES! ❤️ Now let's confirm the plan together!" +
+            (sender ? " — " + sender : "");
+    }
+
+    function sayNo() {
+        document.getElementById("response").textContent =
+            "Invalid choice! Try the first option 😂❤️";
+    }
+
+    updateInvitation();
+</script>
+
+</body>
+</html>
