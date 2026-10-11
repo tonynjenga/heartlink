@@ -422,7 +422,18 @@ function loadInvitationFromLink() {
 
   <p style="font-size:13px;">Donations are completely optional. HeartLink will always be free to use.</p>
 </section>
-    
+
+<section id="agreementSection" style="max-width:600px;margin:25px auto;padding:20px;background:#fff0f5;border-radius:15px;text-align:center;">
+  <h2>❤️ Mutual Agreement</h2>
+  <p>Both people must agree before this becomes a mutual agreement.</p>
+
+  <button id="agreeButton" type="button" disabled
+    style="padding:12px 24px;background:#e91e63;color:white;border:0;border-radius:8px;cursor:pointer;">
+    ❤️ Agree
+  </button>
+
+  <p id="agreementStatus">Create or open an invitation to begin.</p>
+</section>    
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
