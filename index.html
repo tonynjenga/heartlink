@@ -468,6 +468,195 @@ function loadInvitationFromLink() {
   } catch (error) {
     console.error("Firebase sign-in failed:", error);
   }
+
+  // HeartLink mutual agreement feature
+  const agreementButton = document.getElementById("agreeButton");
+  const agreementStatus = document.getElementById("agreementStatus");
+
+  let activeInviteId = null;
+  let activeRole = null;
+  let stopWatching = null;
+
+  const formFields = [
+    "sender", "recipient", "question",
+    "message", "venue", "date", "time"
+  ];
+
+  function showAgreement(id, role) {
+    activeInviteId = id;
+    activeRole = role;
+
+    if (stopWatching) stopWatching();
+
+    agreementButton.disabled = false;
+
+    const inviteRef = doc(db, "invitations", id);
+
+    stopWatching = onSnapshot(inviteRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        agreementStatus.textContent = "Invitation not found.";
+        agreementButton.disabled = true;
+        return;
+      }
+
+      const data = snapshot.data();
+      const bothAgreed =
+        data.creatorAgreed && data.recipientAgreed;
+
+      if (bothAgreed) {
+        agreementStatus.textContent =
+          "It's a mutual agreement! ❤️";
+      } else {
+        agreementStatus.textContent =
+          "Waiting for both people to agree. ❤️";
+      }
+
+      const myAgreement = activeRole === "creator"
+        ? data.creatorAgreed
+        : data.recipientAgreed;
+
+      agreementButton.textContent = myAgreement
+        ? "You have agreed ❤️"
+        : "❤️ Agree";
+
+      agreementButton.disabled = myAgreement;
+    }, (error) => {
+      console.error(error);
+      agreementStatus.textContent =
+        "Could not load agreement. Please refresh.";
+      agreementButton.disabled = true;
+    });
+  }
+
+  // Create a new invitation and its unique link.
+  window.generateInvitationLink = async function () {
+    try {
+      if (!auth.currentUser) {
+        agreementStatus.textContent =
+          "Please refresh the page and try again.";
+        return;
+      }
+
+      const invitation = {};
+
+      formFields.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) invitation[id] = element.value;
+      });
+
+      const inviteRef = await addDoc(
+        collection(db, "invitations"),
+        {
+          ...invitation,
+          creatorUid: auth.currentUser.uid,
+          recipientUid: null,
+          creatorAgreed: false,
+          recipientAgreed: false,
+          createdAt: serverTimestamp()
+        }
+      );
+
+      const link = window.location.origin +
+        window.location.pathname +
+        "#agreement=" + inviteRef.id;
+
+      const linkBox = document.getElementById("shareLink");
+      const linkStatus = document.getElementById("linkStatus");
+
+      if (linkBox) linkBox.value = link;
+      if (linkStatus) {
+        linkStatus.textContent =
+          "Your invitation link is ready! ❤️";
+      }
+
+      showAgreement(inviteRef.id, "creator");
+    } catch (error) {
+      console.error(error);
+      agreementStatus.textContent =
+        "Could not create invitation. Check Firebase settings.";
+    }
+  };
+
+  // Open an invitation shared by another person.
+  async function openSharedAgreement() {
+    const match = window.location.hash.match(/^#agreement=(.+)$/);
+    if (!match) return;
+
+    try {
+      if (!auth.currentUser) {
+        agreementStatus.textContent =
+          "Please refresh the page and try again.";
+        return;
+      }
+
+      const id = match[1];
+      const inviteRef = doc(db, "invitations", id);
+      const snapshot = await getDoc(inviteRef);
+
+      if (!snapshot.exists()) {
+        agreementStatus.textContent = "Invitation not found.";
+        return;
+      }
+
+      const data = snapshot.data();
+      const uid = auth.currentUser.uid;
+      let role;
+
+      if (data.creatorUid === uid) {
+        role = "creator";
+      } else if (data.recipientUid === uid) {
+        role = "recipient";
+      } else if (data.recipientUid === null) {
+        await updateDoc(inviteRef, {
+          recipientUid: uid
+        });
+        role = "recipient";
+      } else {
+        agreementStatus.textContent =
+          "This invitation is already linked to another recipient.";
+        return;
+      }
+
+      formFields.forEach((field) => {
+        const element = document.getElementById(field);
+        if (element && data[field] !== undefined) {
+          element.value = data[field];
+        }
+      });
+
+      if (typeof window.updateInvitation === "function") {
+        window.updateInvitation();
+      }
+
+      showAgreement(id, role);
+    } catch (error) {
+      console.error(error);
+      agreementStatus.textContent =
+        "Could not open invitation. Please refresh and try again.";
+    }
+  }
+
+  agreementButton.addEventListener("click", async () => {
+    if (!activeInviteId || !activeRole || !auth.currentUser) return;
+
+    agreementButton.disabled = true;
+
+    try {
+      const inviteRef = doc(db, "invitations", activeInviteId);
+      const field = activeRole === "creator"
+        ? "creatorAgreed"
+        : "recipientAgreed";
+
+      await updateDoc(inviteRef, { [field]: true });
+    } catch (error) {
+      console.error(error);
+      agreementStatus.textContent =
+        "Your agreement wasn't saved. Please try again.";
+      agreementButton.disabled = false;
+    }
+  });
+
+  await openSharedAgreement();
 </script>
 </body>
 </html>
