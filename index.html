@@ -401,7 +401,7 @@ function loadInvitationFromLink() {
   }
 }
 
-loadInvitationFromLink();    
+
 
 </script>
 
@@ -422,5 +422,41 @@ loadInvitationFromLink();
 
   <p style="font-size:13px;">Donations are completely optional. HeartLink will always be free to use.</p>
 </section>
+    
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    doc,
+    getDoc,
+    updateDoc,
+    onSnapshot,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLd6s5xUI1Yy6AmyP0x_SsiKFFBpz-Kas",
+    authDomain: "heartlink-c55b7.firebaseapp.com",
+    projectId: "heartlink-c55b7",
+    storageBucket: "heartlink-c55b7.firebasestorage.app",
+    messagingSenderId: "898054370058",
+    appId: "1:898054370058:web:d2f512d28351d0b03e40f3",
+    measurementId: "G-H64GM5ZSNF"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  try {
+    await signInAnonymously(auth);
+    console.log("HeartLink connected to Firebase.");
+  } catch (error) {
+    console.error("Firebase sign-in failed:", error);
+  }
+</script>
 </body>
 </html>
